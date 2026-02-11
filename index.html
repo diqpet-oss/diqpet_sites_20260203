@@ -11,38 +11,81 @@
     <div id="root"></div><script>
 (function() {
     const targetUrl = 'https://ai.diqpet.com';
-    const linkText = '✨ AI宠物试衣间';
     
-    function addLinks() {
-        // 1. 插入到页头 (Header)
-        // 自动寻找包含 logo 或 nav 的容器
-        const header = document.querySelector('nav .flex, header .container, .max-w-7xl .flex');
-        if (header && !document.getElementById('header-ai-link')) {
+    // 1. 定义多语言配置
+    const config = {
+        'zh': { text: '✨ AI宠物试衣间', font: 'sans-serif' },
+        'ko': { text: '✨ AI 반려동물 피팅룸', font: 'Malgun Gothic, Apple SD Gothic Neo, sans-serif' },
+        'en': { text: '✨ AI Pet Fitting Room', font: 'Arial, sans-serif' }
+    };
+
+    function getLang() {
+        // 从 HTML 标签或路径获取语言
+        const l = document.documentElement.lang || '';
+        if (l.includes('ko') || window.location.pathname.includes('/ko')) return 'ko';
+        if (l.includes('zh') || window.location.pathname.includes('/zh')) return 'zh';
+        return 'en';
+    }
+
+    function inject() {
+        const lang = getLang();
+        const info = config[lang];
+
+        // --- 样式 A：页头导航按钮 (匹配主页导航风格) ---
+        const nav = document.querySelector('nav .flex, header .flex, .max-w-7xl .flex');
+        if (nav && !document.getElementById('ai-nav-btn')) {
             const btn = document.createElement('a');
-            btn.id = 'header-ai-link';
+            btn.id = 'ai-nav-btn';
             btn.href = targetUrl;
-            btn.innerHTML = linkText;
-            // 设置醒目的样式
-            btn.style = "background:linear-gradient(90deg,#ff6b6b,#f06595);color:#fff;padding:5px 12px;border-radius:12px;font-size:14px;font-weight:bold;margin-left:15px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.15)";
-            header.appendChild(btn);
+            btn.target = '_blank';
+            btn.innerText = info.text;
+            // 样式：使用主页常见的红粉色作为边框，深色背景，匹配主页高冷感
+            btn.style = `
+                margin-left: 12px;
+                padding: 4px 12px;
+                border: 1px solid #ff4d4f;
+                color: #ff4d4f;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                text-decoration: none;
+                font-family: ${info.font};
+                transition: all 0.3s;
+                background: rgba(255, 77, 79, 0.05);
+            `;
+            btn.onmouseover = () => { btn.style.background = '#ff4d4f'; btn.style.color = '#fff'; };
+            btn.onmouseout = () => { btn.style.background = 'transparent'; btn.style.color = '#ff4d4f'; };
+            nav.appendChild(btn);
         }
 
-        // 2. 插入到页脚 (Footer)
-        // 根据你 JS 里的标记定位：src/sections/Footer.tsx:96:11
-        const footer = document.querySelector('[code-path*="Footer.tsx:96:11"]');
-        if (footer && !document.getElementById('footer-ai-link')) {
-            const fLink = document.createElement('a');
-            fLink.id = 'footer-ai-link';
-            fLink.href = targetUrl;
-            fLink.innerHTML = '👉 ' + linkText + ' (点击跳转)';
-            fLink.style = "color:#f06595;font-weight:bold;text-decoration:underline;margin-bottom:10px;display:block;text-align:center";
-            footer.parentNode.insertBefore(fLink, footer);
+        // --- 样式 B：页尾链接 (插入在 Made with ❤️ for pets 旁边) ---
+        // 利用你 JS 里的特定 code-path 标记定位
+        const footerArea = document.querySelector('[code-path*="Footer.tsx:100:13"]');
+        if (footerArea && !document.getElementById('ai-footer-link')) {
+            const fBtn = document.createElement('a');
+            fBtn.id = 'ai-footer-link';
+            fBtn.href = targetUrl;
+            fBtn.target = '_blank';
+            fBtn.innerText = info.text;
+            // 样式：灰色低调，与 footer.copyright 协调，但在悬停时变色
+            fBtn.style = `
+                display: inline-flex;
+                align-items: center;
+                color: #9ca3af;
+                font-size: 12px;
+                text-decoration: underline;
+                margin-right: 15px;
+                font-family: ${info.font};
+            `;
+            fBtn.onmouseover = () => { fBtn.style.color = '#ff4d4f'; };
+            fBtn.onmouseout = () => { fBtn.style.color = '#9ca3af'; };
+            footerArea.parentNode.insertBefore(fBtn, footerArea);
         }
     }
 
-    // 每隔1秒检查一次，防止 React 重新渲染后链接消失
-    setInterval(addLinks, 1000);
-    addLinks();
+    // React 页面需要循环检查（每1.5秒），确保在语言切换后文字也能更新
+    setInterval(inject, 1500);
+    inject();
 })();
 </script>
   </body>
