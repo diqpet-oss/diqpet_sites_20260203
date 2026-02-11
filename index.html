@@ -8,6 +8,42 @@
     <link rel="stylesheet" crossorigin href="./assets/index-rfLsnkrQ.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"></div<script>
+(function() {
+    const targetUrl = 'https://ai.diqpet.com';
+    const linkText = '✨ AI宠物试衣间';
+    
+    function addLinks() {
+        // 1. 插入到页头 (Header)
+        // 自动寻找包含 logo 或 nav 的容器
+        const header = document.querySelector('nav .flex, header .container, .max-w-7xl .flex');
+        if (header && !document.getElementById('header-ai-link')) {
+            const btn = document.createElement('a');
+            btn.id = 'header-ai-link';
+            btn.href = targetUrl;
+            btn.innerHTML = linkText;
+            // 设置醒目的样式
+            btn.style = "background:linear-gradient(90deg,#ff6b6b,#f06595);color:#fff;padding:5px 12px;border-radius:12px;font-size:14px;font-weight:bold;margin-left:15px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.15)";
+            header.appendChild(btn);
+        }
+
+        // 2. 插入到页脚 (Footer)
+        // 根据你 JS 里的标记定位：src/sections/Footer.tsx:96:11
+        const footer = document.querySelector('[code-path*="Footer.tsx:96:11"]');
+        if (footer && !document.getElementById('footer-ai-link')) {
+            const fLink = document.createElement('a');
+            fLink.id = 'footer-ai-link';
+            fLink.href = targetUrl;
+            fLink.innerHTML = '👉 ' + linkText + ' (点击跳转)';
+            fLink.style = "color:#f06595;font-weight:bold;text-decoration:underline;margin-bottom:10px;display:block;text-align:center";
+            footer.parentNode.insertBefore(fLink, footer);
+        }
+    }
+
+    // 每隔1秒检查一次，防止 React 重新渲染后链接消失
+    setInterval(addLinks, 1000);
+    addLinks();
+})();
+</script>
   </body>
 </html>
